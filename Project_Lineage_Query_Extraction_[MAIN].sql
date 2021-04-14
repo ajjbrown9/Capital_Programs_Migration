@@ -1,8 +1,13 @@
 /*####################################################
     Project Lineage Data Set
-    Version:Project_Lineage_Query_Pkg2_11.13_v15
+    Package Version:Project_Lineage_Query_Final_v5
 
     ###############################################
+    04/05/2021 - Increment version 11.14_v15 (Round 4)
+        Notes and Comments:
+            - AP_INV_LINES DATA GROUP
+                - Added column "column20" (as "ebs_ap_inv_ln_amt")
+            
     03/19/2021 - New in version 11.13_v15 (Round 4)
         Notes and Comments:
             - All extract queries include three header columns:
@@ -1024,7 +1029,8 @@ select
     ,your_stage_table."column16" as "ebs_ap_inv_ln_product_type" --##NEW## 03/13/2021
     ,your_stage_table."column17" as "ebs_ap_inv_ln_line_code" --##NEW## 03/13/2021
     ,your_stage_table."column18" as "ebs_ap_inv_ln_rtng_inv_id" --##NEW## 03/13/2021
-    ,your_stage_table."column19" as "ebs_ap_inv_ln_rtng_line_no" --##NEW## 03/13/2021    
+    ,your_stage_table."column19" as "ebs_ap_inv_ln_rtng_line_no" --##NEW## 03/13/2021
+    ,your_stage_table."column20" as as "ebs_ap_inv_ln_amt" --##NEW## 04/04/2021
     ,your_stage_table."column49" as "ebs_ap_inv_ln_create_dt"
     ,your_stage_table."column50" as "ebs_ap_inv_ln_update_dt"  
 from your_stage_table                         
