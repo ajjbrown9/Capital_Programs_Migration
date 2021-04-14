@@ -1,5 +1,5 @@
 /*Oracle EBS OLTP connection pool*/
-/*Project_Lineage_Query_Pkg2_11.13_v15*/
+/*Project_Lineage_Query_Final_v5*/
 /*
     prj     = project
     tsk     = task
@@ -20,16 +20,6 @@
     amt = amount
     dist = distribution
     qty = quantity
-
-    12/01/2020 - Added po_dist_all.REQ_DISTRIBUTION_ID --done
-    12/01/2020 - Corrected PO_DISTRIBUTIONS_AWARD_ID --done
-    12/01/2020 - Corrected ebs_pa_projects.column50 from LAST_UPDATED_BY to LAST_UPDATE_DATE  --done
-    12/01/2020 - Corrected ebs_pa_tasks.column50 from LAST_UPDATED_BY to LAST_UPDATE_DATE --done
-    12/04/2020 - Added "column12.ebs_po_header_vendor_site_id" and "column13.ebs_po_header_vendor_site_id" --done
-    12/04/2020 - Added "column27.ebs_agr_vendor_site_id" and "column28.ebs_agr_vendor_contact_id" --done
-    12/04/2020 - Added "column17.ap_inv_header_vendor_site_id" and "column18.ap_inv_header_vendor_contact_id" --done 
-    12/04/2020 - Added ap_inv_payments CTE - done
-    12/08/2020 - Re-ordered 
 */
 
 with
@@ -1020,7 +1010,7 @@ with
             ,auc_item_price.SUB_LINE_SEQUENCE_NUMBER as "column13" -- as "ebs_auc_itm_line_no"
             ,auc_item_price.DISP_LINE_NUMBER as "column14" -- as "ebs_auc_itm_disp_line_no"
             ,bid_item_price.ITEM_DESCRIPTION as "column15" -- as "ebs_auc_itm_descr"
-            ,nvl(bid_item_price.AWARD_QUANTITY,0) as "column16" -- as "ebs_auc_itm_qty"
+            ,nvl(nvl(bid_item_price.AWARD_QUANTITY,auc_item_price.QUANTITY),0) as "column16" -- as "ebs_auc_itm_qty"
             ,auc_item_price.UOM_CODE as "column17" -- as "ebs_auc_itm_uom_code"
             ,auc_item_price.UNIT_OF_MEASURE as "column18" -- as "ebs_auc_itm_uom_descr"
             ,nvl(bid_item_price.AWARD_PRICE,0) as "column19" -- as "ebs_auc_itm_awd_price"
@@ -1037,7 +1027,11 @@ with
             on(
                 ebs_auction_header.AUCTION_HEADER_ID = bid_item_price.AUCTION_HEADER_ID
                     and
-                bid_item_price.AWARD_STATUS = 'AWARDED'
+                (
+                    bid_item_price.AWARD_STATUS = 'AWARDED'
+                        or
+                    bid_item_price.AWARD_STATUS = 'PARTIAL'
+                )
             )
         inner join PON_BID_HEADERS bid_header
             on(
@@ -1310,6 +1304,7 @@ with
             ,ap_inv_line.LINE_TYPE_LOOKUP_CODE as "column17" -- as "ebs_ap_inv_ln_line_code" --##NEW## 03/13/2021
             ,ap_inv_line.RETAINED_INVOICE_ID as "column18" -- as "ebs_ap_inv_ln_rtng_inv_id" --##NEW## 03/13/2021
             ,ap_inv_line.RETAINED_LINE_NUMBER as "column19" -- as "ebs_ap_inv_ln_rtng_line_no" --##NEW## 03/13/2021
+            ,nvl(ap_inv_line.AMOUNT,0) as "column20" -- as "ebs_ap_inv_ln_amt" --##NEW## 04/04/2021         
             ,ap_inv_line.CREATION_DATE as "column49" -- as "ebs_ap_inv_ln_create_dt"
             ,ap_inv_line.LAST_UPDATE_DATE as "column50" -- as "ebs_ap_inv_ln_update_dt"
         from AP_INVOICE_LINES_ALL ap_inv_line
@@ -2503,7 +2498,7 @@ from (
         ,cast(ebs_ap_inv_lines."column17" as varchar2(2056)) as "column17"
         ,cast(ebs_ap_inv_lines."column18" as varchar2(2056)) as "column18"
         ,cast(ebs_ap_inv_lines."column19" as varchar2(2056)) as "column19"
-        ,null as "column20"
+        ,cast(to_char(ebs_ap_inv_lines."column20",'999999999.9999') as varchar2(2056)) as "column20" --##NEW## 04/04/2021 
         ,null as "column21"
         ,null as "column22"
         ,null as "column23"
